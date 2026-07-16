@@ -114,13 +114,18 @@ rec {
   skillFromDir =
     {
       dir,
-      name ? baseNameOf dir,
+      name ? builtins.unsafeDiscardStringContext (baseNameOf dir),
       exclude ? [ "README.md" ],
       ...
     }@args:
     let
       allFiles = lib.filesystem.listFilesRecursive dir;
-      rel = path: lib.removePrefix "${toString dir}/" (toString path);
+      # Keys (skill name, relative file names) must be context-free strings:
+      # `dir` may be "${flakeInput}/..." and attribute names cannot refer to
+      # store paths. The file *sources* keep their context, so the
+      # dependency on the input is preserved.
+      rel =
+        path: builtins.unsafeDiscardStringContext (lib.removePrefix "${toString dir}/" (toString path));
       extraFiles = lib.filter (
         p: rel p != "SKILL.md" && !lib.elem (rel p) exclude
       ) allFiles;
