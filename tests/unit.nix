@@ -133,6 +133,57 @@ lib.runTests {
     expected = true;
   };
 
+  # --- markdown capture ---------------------------------------------------
+  testParseMarkdownFrontmatter = {
+    expr = agentPmLib.parseMarkdownDoc "---\ndescription: Fess up\nargument-hint: \"[scope]\"\n---\n\nBody line one.\nBody line two.";
+    expected = {
+      frontmatter = {
+        description = "Fess up";
+        argument-hint = "[scope]";
+      };
+      body = "Body line one.\nBody line two.";
+    };
+  };
+
+  testParseMarkdownNoFrontmatter = {
+    expr = agentPmLib.parseMarkdownDoc "Just a body.\nNo frontmatter here.";
+    expected = {
+      frontmatter = { };
+      body = "Just a body.\nNo frontmatter here.";
+    };
+  };
+
+  testPromptFromMarkdownCaptures = {
+    expr =
+      let
+        p = evalPrompt (agentPmLib.promptFromMarkdown {
+          name = "fess";
+          text = "---\ndescription: Fess up\nauthor: Isaac\n---\nAssume dishonesty.";
+        }) { };
+      in
+      {
+        inherit (p) type name description body;
+        author = p.extraFrontmatter.author;
+      };
+    expected = {
+      type = "skill";
+      name = "fess";
+      description = "Fess up";
+      body = "Assume dishonesty.";
+      author = "Isaac";
+    };
+  };
+
+  testPromptFromMarkdownOverrides = {
+    expr =
+      (evalPrompt (agentPmLib.promptFromMarkdown {
+        name = "wiggum";
+        text = "Continue autonomously.";
+        description = "Keep going until parity.";
+      }) { }).description;
+    expected = "Keep going until parity.";
+  };
+
   # --- rendering ---------------------------------------------------------
   testSkillRenderedForClaude = {
     expr = rendered ? ".claude/skills/code-review-go/SKILL.md";

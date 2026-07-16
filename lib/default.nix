@@ -11,6 +11,7 @@ let
     toolNames = lib.attrNames toolRegistry;
   };
   degrade = import ./degrade.nix { inherit lib; };
+  markdown = import ./markdown.nix { inherit lib; };
   render = import ./render.nix {
     inherit
       lib
@@ -25,6 +26,7 @@ in
   inherit (normalize) evalPrompt normalizePrompt mkPromptSet;
   inherit (render) renderFiles pruneRootsFor;
   inherit (frontmatter) toYamlFrontmatter mkDoc;
+  inherit (markdown) parseMarkdownDoc promptFromMarkdown skillFromDir;
   inherit (degrade) degradeToSkill;
   inherit toolRegistry schema;
   toolNames = lib.attrNames toolRegistry;
