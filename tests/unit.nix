@@ -332,6 +332,19 @@ lib.runTests {
     expected = true;
   };
 
+  testCodexPruneRootsClaimLegacyDirs = {
+    # codex also reads ~/.agents/skills and ~/.codex/agents; stale files
+    # there must be inside the clobber/prune perimeter
+    expr =
+      lib.all (r: lib.elem r (agentPmLib.pruneRootsFor { codex.enable = true; }))
+        [
+          ".agents/skills"
+          ".codex/agents"
+          ".codex/skills"
+        ];
+    expected = true;
+  };
+
   testDuplicatePromptsRejected = {
     expr = tryFails (renderFiles {
       prompts = [

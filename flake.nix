@@ -125,6 +125,7 @@
             assert files ? ".claude/skills/code-review-go/SKILL.md";
             assert lib.hasInfix "strict" files.".claude/skills/code-review-go/SKILL.md".text;
             assert files ? ".factory/droids/security-auditor.md";
+            assert lib.hasInfix ".agents/skills" hmConfig.config.home.activation.agentPmClobber.data;
             pkgs.runCommandLocal "agent-pm-hm-eval" { } "touch $out";
         }
         // lib.optionalAttrs (lib.hasSuffix "-linux" system) {

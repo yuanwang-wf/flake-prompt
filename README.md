@@ -70,6 +70,15 @@ programs.agent-pm = {
 };
 ```
 
+The prompt roots of the enabled tools (`~/.claude/skills`,
+`~/.codex/skills`, the cross-CLI `~/.agents/skills`, …) are treated as
+owned exclusively by agent-pm: at switch time an activation step deletes
+foreign regular files under them — leftovers from hand installs or
+retired deployers that the CLIs would otherwise keep listing as stale
+commands. Hidden entries (e.g. codex's bundled `skills/.system`) are
+spared, and home-manager's own symlinks are never touched. Opt out with
+`programs.agent-pm.clobberForeignFiles = false`.
+
 ### NixOS without home-manager
 
 ```nix

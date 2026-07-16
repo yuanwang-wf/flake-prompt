@@ -35,5 +35,11 @@ assert lib.assertMsg (lib.elem commandStrategy [
     ".codex/skills"
     ".codex/prompts"
     ".codex/AGENTS.md"
+    # Codex also discovers skills in the cross-CLI ~/.agents/skills dir and
+    # subagents in ~/.codex/agents; agent-pm never renders there, but stale
+    # files left by other deployers keep showing up in codex, so the roots
+    # are claimed for pruning/clobbering.
+    ".agents/skills"
+    ".codex/agents"
   ];
 }
