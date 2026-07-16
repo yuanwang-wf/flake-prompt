@@ -1,4 +1,6 @@
-# agent-pm
+<div align="center"><h1>F&nbsp;&nbsp;&nbsp;l&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;k&nbsp;&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P&nbsp;&nbsp;&nbsp;r&nbsp;&nbsp;&nbsp;o&nbsp;&nbsp;&nbsp;m&nbsp;&nbsp;&nbsp;p&nbsp;&nbsp;&nbsp;t</h1></div>
+
+---
 
 A Nix flake that acts as a package manager for AI-agent prompts. Declare
 skills, subagents, slash commands, and instructions **once** in Nix —
