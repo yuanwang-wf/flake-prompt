@@ -345,6 +345,27 @@ lib.runTests {
     expected = true;
   };
 
+  testCrushPruneRootsClaimSharedSkillDirs = {
+    # crush surfaces commands from skills and reads the cross-CLI
+    # ~/.agents/skills and ~/.config/agents/skills dirs; stale files there
+    # must be inside the clobber/prune perimeter even without codex enabled
+    expr =
+      lib.all (r: lib.elem r (agentPmLib.pruneRootsFor { crush.enable = true; }))
+        [
+          ".agents/skills"
+          ".config/agents/skills"
+          ".config/crush/skills"
+        ];
+    expected = true;
+  };
+
+  testCrushDoesNotClaimClaudeSkills = {
+    # crush also reads ~/.claude/skills, but enabling crush alone must NOT
+    # claim it — clobbering there would delete real Claude Code skills
+    expr = lib.elem ".claude/skills" (agentPmLib.pruneRootsFor { crush.enable = true; });
+    expected = false;
+  };
+
   testDuplicatePromptsRejected = {
     expr = tryFails (renderFiles {
       prompts = [
