@@ -14,12 +14,15 @@ time — and render them into the native on-disk formats of:
 | **opencode** | `~/.config/opencode/skills/…` ¹ | `~/.config/opencode/agent/<n>.md` | `~/.config/opencode/command/<n>.md` | `~/.config/opencode/AGENTS.md` |
 | **Crush** | `~/.config/crush/skills/…` | — *(degrades)* | — *(degrades)* ² | `~/.config/crush/CRUSH.md` |
 | **Droid** | `~/.factory/skills/…` | `~/.factory/droids/<n>.md` | merged into skills ³ | `~/.factory/AGENTS.md` |
+| **pi** | `~/.pi/agent/skills/…` | — *(degrades)* ⁴ | `~/.pi/agent/prompts/<n>.md` | `~/.pi/agent/AGENTS.md` |
 
 ¹ opencode also reads `~/.claude/skills`; when both targets are enabled,
 agent-pm skips the opencode copy (`deduplicateSharedPaths`, per-prompt
 override `targets.opencode.force = true`).
 ² degraded commands become palette-only skills (`disable-model-invocation: true`).
 ³ `tools.droid.commandStrategy = "legacy-commands"` uses `~/.factory/commands` instead.
+⁴ pi ships no subagent format on purpose; command bodies keep working
+(`$ARGUMENTS`/`$1..$9` are pi prompt-template syntax too).
 
 This is a **pure framework** — it ships no prompts. Your prompts live in
 your own flake (start one with `nix flake init -t github:OWNER/agent-pm`).
@@ -51,7 +54,7 @@ body may use `$ARGUMENTS`/`$1..$9`), `order` (instructions merge order,
 default 1000), `degradation = "skip" | "skill"`, `extraFrontmatter`, and
 per-tool `targets.<tool>.{enable, extraFrontmatter, body, force}`.
 
-When a tool lacks a type natively (agents on codex/crush, commands on
+When a tool lacks a type natively (agents on codex/crush/pi, commands on
 crush), the prompt **degrades to a skill** carrying the same content by
 default; set `degradation = "skip"` (per prompt or globally via
 `defaults.degradation`) to drop it instead.
@@ -122,6 +125,6 @@ agentPm.toYamlFrontmatter attrs      # JSON-scalar YAML (colons/newlines safe)
 ```
 
 Option docs: `nix build .#docs`. Tests: `nix flake check` (pure-eval unit
-tests, golden-tree diff for all five tools, home-manager and NixOS module
+tests, golden-tree diff for all six tools, home-manager and NixOS module
 evals). After intentional rendering changes, regenerate the golden tree:
 `nix build .#example && rm -rf tests/golden && cp -rT --no-preserve=mode,timestamps "$(readlink -f result)" tests/golden/`.

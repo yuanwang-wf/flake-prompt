@@ -149,7 +149,7 @@ in
       targets = mkOption {
         type = types.attrsOf targetOverrideType;
         default = { };
-        description = "Per-tool overrides, keyed by tool name (claude, codex, opencode, crush, droid).";
+        description = "Per-tool overrides, keyed by tool name (claude, codex, opencode, crush, droid, pi).";
       };
     };
   };

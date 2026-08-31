@@ -26,6 +26,7 @@ let
     opencode.enable = true;
     crush.enable = true;
     droid.enable = true;
+    pi.enable = true;
   };
 
   rendered = renderFiles {
@@ -162,7 +163,12 @@ lib.runTests {
         }) { };
       in
       {
-        inherit (p) type name description body;
+        inherit (p)
+          type
+          name
+          description
+          body
+          ;
         author = p.extraFrontmatter.author;
       };
     expected = {
@@ -306,13 +312,48 @@ lib.runTests {
     expected = true;
   };
 
-  testInstructionsOnAllFiveTools = {
+  testInstructionsOnAllTools = {
     expr = lib.all (p: rendered ? ${p}) [
       ".claude/CLAUDE.md"
       ".codex/AGENTS.md"
       ".config/opencode/AGENTS.md"
       ".config/crush/CRUSH.md"
       ".factory/AGENTS.md"
+      ".pi/agent/AGENTS.md"
+    ];
+    expected = true;
+  };
+
+  testPiNativeLayout = {
+    # skills under ~/.pi/agent/skills, prompt templates (slash commands)
+    # under ~/.pi/agent/prompts
+    expr =
+      rendered ? ".pi/agent/skills/code-review-go/SKILL.md"
+      && rendered ? ".pi/agent/prompts/changelog.md";
+    expected = true;
+  };
+
+  testPiAgentDegraded = {
+    # pi deliberately ships no subagents
+    expr = lib.hasInfix "Subagent persona" rendered.".pi/agent/skills/security-auditor/SKILL.md".text;
+    expected = true;
+  };
+
+  testPiSkillNotDeduplicatedAgainstClaude = {
+    # unlike opencode, pi does not read ~/.claude/skills by default, so its
+    # skill copy must survive the claude target being enabled
+    expr = rendered ? ".pi/agent/skills/code-review-go/SKILL.md";
+    expected = true;
+  };
+
+  testPiPruneRootsClaimSharedSkillDir = {
+    # pi reads the cross-CLI ~/.agents/skills dir; stale files there must be
+    # inside the clobber/prune perimeter even when codex/crush are disabled
+    expr = lib.all (r: lib.elem r (agentPmLib.pruneRootsFor { pi.enable = true; })) [
+      ".agents/skills"
+      ".pi/agent/skills"
+      ".pi/agent/prompts"
+      ".pi/agent/AGENTS.md"
     ];
     expected = true;
   };
@@ -335,13 +376,11 @@ lib.runTests {
   testCodexPruneRootsClaimLegacyDirs = {
     # codex also reads ~/.agents/skills and ~/.codex/agents; stale files
     # there must be inside the clobber/prune perimeter
-    expr =
-      lib.all (r: lib.elem r (agentPmLib.pruneRootsFor { codex.enable = true; }))
-        [
-          ".agents/skills"
-          ".codex/agents"
-          ".codex/skills"
-        ];
+    expr = lib.all (r: lib.elem r (agentPmLib.pruneRootsFor { codex.enable = true; })) [
+      ".agents/skills"
+      ".codex/agents"
+      ".codex/skills"
+    ];
     expected = true;
   };
 
@@ -349,13 +388,11 @@ lib.runTests {
     # crush surfaces commands from skills and reads the cross-CLI
     # ~/.agents/skills and ~/.config/agents/skills dirs; stale files there
     # must be inside the clobber/prune perimeter even without codex enabled
-    expr =
-      lib.all (r: lib.elem r (agentPmLib.pruneRootsFor { crush.enable = true; }))
-        [
-          ".agents/skills"
-          ".config/agents/skills"
-          ".config/crush/skills"
-        ];
+    expr = lib.all (r: lib.elem r (agentPmLib.pruneRootsFor { crush.enable = true; })) [
+      ".agents/skills"
+      ".config/agents/skills"
+      ".config/crush/skills"
+    ];
     expected = true;
   };
 

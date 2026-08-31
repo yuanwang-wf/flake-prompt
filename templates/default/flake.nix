@@ -41,6 +41,7 @@
             opencode.enable = true;
             crush.enable = true;
             droid.enable = true;
+            pi.enable = true;
           };
         };
       });
