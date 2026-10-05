@@ -11,4 +11,5 @@
   crush = import ./crush.nix { inherit lib; };
   droid = import ./droid.nix { inherit lib; };
   pi = import ./pi.nix { inherit lib; };
+  cursor = import ./cursor.nix { inherit lib; };
 }

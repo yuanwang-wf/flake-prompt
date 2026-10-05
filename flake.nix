@@ -1,5 +1,5 @@
 {
-  description = "agent-pm: declare AI-agent prompts once in Nix, render them for Claude Code, Codex, opencode, Crush, Droid, and pi";
+  description = "agent-pm: declare AI-agent prompts once in Nix, render them for Claude Code, Codex, opencode, Crush, Droid, pi, and Cursor";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -36,6 +36,7 @@
         crush.enable = true;
         droid.enable = true;
         pi.enable = true;
+        cursor.enable = true;
       };
     in
     {

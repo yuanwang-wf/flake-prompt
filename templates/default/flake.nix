@@ -42,6 +42,7 @@
             crush.enable = true;
             droid.enable = true;
             pi.enable = true;
+            cursor.enable = true;
           };
         };
       });

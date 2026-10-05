@@ -27,6 +27,7 @@ let
     crush.enable = true;
     droid.enable = true;
     pi.enable = true;
+    cursor.enable = true;
   };
 
   rendered = renderFiles {
@@ -130,7 +131,7 @@ lib.runTests {
   };
 
   testUnknownTargetRejected = {
-    expr = tryFails (evalPrompt (skill "ok" // { targets.cursor.enable = false; }) { });
+    expr = tryFails (evalPrompt (skill "ok" // { targets.bogus.enable = false; }) { });
     expected = true;
   };
 
@@ -358,6 +359,41 @@ lib.runTests {
     expected = true;
   };
 
+  testCursorNativeLayout = {
+    # Agent Skills under ~/.cursor/skills; no commands/instructions paths yet
+    expr = rendered ? ".cursor/skills/code-review-go/SKILL.md";
+    expected = true;
+  };
+
+  testCursorAgentDegraded = {
+    expr = lib.hasInfix "Subagent persona" rendered.".cursor/skills/security-auditor/SKILL.md".text;
+    expected = true;
+  };
+
+  testCursorCommandDegraded = {
+    # commands become palette-only skills
+    expr =
+      rendered ? ".cursor/skills/changelog/SKILL.md"
+      && lib.hasInfix "disable-model-invocation" rendered.".cursor/skills/changelog/SKILL.md".text;
+    expected = true;
+  };
+
+  testCursorSkipsInstructions = {
+    expr = rendered ? ".cursor/AGENTS.md" || rendered ? ".cursor/CLAUDE.md";
+    expected = false;
+  };
+
+  testCursorPruneRoots = {
+    expr = agentPmLib.pruneRootsFor { cursor.enable = true; };
+    expected = [ ".cursor/skills" ];
+  };
+
+  testCursorSkillNotDeduplicatedAgainstClaude = {
+    # cursor does not read ~/.claude/skills, so its copy must survive
+    expr = rendered ? ".cursor/skills/code-review-go/SKILL.md";
+    expected = true;
+  };
+
   testTargetDisablePerTool = {
     expr =
       (renderFiles {
@@ -417,7 +453,7 @@ lib.runTests {
   testUnknownToolRejected = {
     expr = tryFails (renderFiles {
       prompts = [ (skill "x") ];
-      tools.cursor.enable = true;
+      tools.bogus.enable = true;
     });
     expected = true;
   };

@@ -99,8 +99,12 @@ rec {
 
           resolve =
             p:
-            if p.type == "instructions" || tool.supports.${p.type} then
+            if tool.supports.${p.type} then
               [ p ]
+            else if p.type == "instructions" then
+              # Instructions cannot degrade to skills; drop them when the
+              # tool has no instructions path (e.g. cursor today).
+              [ ]
             else if (if p.degradation != null then p.degradation else defaultDegradation) == "skip" then
               [ ]
             else

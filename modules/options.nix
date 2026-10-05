@@ -55,6 +55,7 @@ in
         opencode = mkToolOption "opencode" { };
         crush = mkToolOption "Charm Crush" { };
         pi = mkToolOption "pi" { };
+        cursor = mkToolOption "Cursor" { };
         droid = mkToolOption "Factory Droid" {
           commandStrategy = mkOption {
             type = types.enum [
